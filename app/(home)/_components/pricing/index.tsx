@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+
 import { PricingCard } from "./pricing-card";
 
 const features = [
@@ -16,13 +17,33 @@ export const Pricing = () => {
       <div className="grid w-full gap-6 md:grid-cols-4">
         <PricingCard
           title="Online Marketing"
-          description=""
+          description="Starting at"
           discount={10}
           price={250}
           features={features}
         />
+        <PricingCard
+          title="SEO Optimization"
+          description="Starting at"
+          discount={5}
+          price={100}
+          features={features}
+        />
+        <PricingCard
+          title="Data Analysis"
+          description="Starting at"
+          discount={20}
+          price={50}
+          features={features}
+        />
+        <PricingCard
+          title="Lead Generation"
+          description="Starting at"
+          discount={40}
+          price={70}
+          features={features}
+        />
       </div>
-      s
     </div>
   );
 };

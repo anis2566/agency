@@ -1,6 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 
 import { ServiceCard } from "./service-card";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 export const Services = () => {
   return (
@@ -35,6 +38,10 @@ export const Services = () => {
           image="/lead-generation.png"
         />
       </div>
+
+      <Link href="/services" className={cn(buttonVariants({ variant: "outline" }))}>
+        View All Services
+      </Link>
     </div>
   );
 };
