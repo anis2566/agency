@@ -8,7 +8,7 @@ export const ServiceSchema = z.object({
   description: requiredString,
   price: z.number().min(1, { message: "required" }),
   thumbnail: requiredString,
-  features: z.array(z.string()).optional(),
+  features: requiredString,
   status: z
     .nativeEnum(ServiceStatus)
     .refine((data) => Object.values(ServiceStatus).includes(data), {

@@ -3,10 +3,9 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Service, ServiceStatus } from "@prisma/client"
-import { Plus, Trash2 } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import Image from "next/image"
-import { useState } from "react"
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -20,14 +19,13 @@ import { ServiceSchema, ServiceSchemaType } from "@/schema/service.schema"
 import { LoadingButton } from "@/components/loading-button"
 import { useGetCategory } from "../../../query"
 import { useUpdateService } from "../../../mutation"
+import { Editor } from "@/components/editor"
 
 interface Props {
     service: Service
 }
 
 export const EditServiceForm = ({ service }: Props) => {
-    const [value, setValue] = useState<string>("")
-
     const { data: categories } = useGetCategory()
 
     const form = useForm<ServiceSchemaType>({
@@ -46,19 +44,6 @@ export const EditServiceForm = ({ service }: Props) => {
 
     const onSubmit = (values: ServiceSchemaType) => {
         mutate({ id: service.id, values })
-    }
-
-    const handleAddFeature = (value: string) => {
-        if (value) {
-            const currentFeatures = form.getValues("features") || [];
-            form.setValue("features", [...currentFeatures, value]);
-            setValue("");
-        }
-    }
-
-    const handleRemoveFeature = (index: number) => {
-        const currentFeatures = form.getValues("features") || [];
-        form.setValue("features", currentFeatures.filter((_, i) => i !== index));
     }
 
     return (
@@ -181,37 +166,19 @@ export const EditServiceForm = ({ service }: Props) => {
                             )}
                         />
 
-                        <Card className="shadow-none border-none p-0 space-y-2">
-                            <CardHeader className="p-0">
-                                <CardTitle>Features</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-3 p-0">
-                                <div className="flex items-center justify-between gap-x-3">
-                                    <Input placeholder="add feature..." value={value} onChange={(e) => setValue(e.target.value)} />
-                                    <Button type="button" onClick={() => handleAddFeature(value)} disabled={isPending || !value}>
-                                        <Plus className="w-4 h-4" />
-                                    </Button>
-                                </div>
-
-                                <div className="flex flex-col gap-y-2 border p-2 rounded-md">
-                                    {
-                                        form.watch("features")?.map((feature, index) => (
-                                            <div key={index} className="flex items-center justify-between gap-x-3">
-                                                <span>{feature}</span>
-                                                <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveFeature(index)}>
-                                                    <Trash2 className="w-4 h-4 text-rose-500" />
-                                                </Button>
-                                            </div>
-                                        ))
-                                    }
-                                    {
-                                        form.watch("features")?.length === 0 && (
-                                            <p className="text-sm text-gray-500 text-center py-2">No features added</p>
-                                        )
-                                    }
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <FormField
+                            control={form.control}
+                            name="features"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Features</FormLabel>
+                                    <FormControl>
+                                        <Editor {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}

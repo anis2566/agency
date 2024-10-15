@@ -15,27 +15,17 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Review, User } from "@prisma/client";
 
-// Import necessary utilities for generating random data
-import { faker } from '@faker-js/faker';
+interface ReviewWithUser extends Review {
+    user: User
+}
 
-// Function to generate random reviews
-const generateRandomReviews = () => {
-    return Array.from({ length: 5 }, () => ({
-        id: faker.string.uuid(),
-        rating: faker.number.float({ min: 0, max: 5 }),
-        content: faker.lorem.sentence(),
-        user: {
-            id: faker.string.uuid(),
-            name: faker.person.fullName(),
-            email: faker.internet.email(),
-            image: faker.image.avatar(),
-        },
-    }));
-};
+interface Props {
+    reviews: ReviewWithUser[]
+}
 
-export const Testimonials = () => {
-    const reviews = generateRandomReviews();
+export const Testimonials = ({ reviews }: Props) => {
 
     return (
         <section id="testimonials" className="container flex flex-col items-center justify-center py-20">

@@ -24,6 +24,34 @@ enum CategoryStatus {
   Unpublished
 }
 
+enum PaymentStatus {
+  Pending
+  Paid
+  Failed
+}
+
+enum OrderStatus {
+  Pending
+  Processing
+  Completed
+  Cancelled
+}
+
+enum Month {
+  January
+  February
+  March
+  April
+  May
+  June
+  July
+  August
+  September
+  October
+  November
+  December
+}
+
 model User {
   id               String           @id @default(auto()) @map("_id") @db.ObjectId
   name             String?
@@ -33,7 +61,10 @@ model User {
   image            String?
   accounts         Account[]
   role             Role             @default(User)
+
   pushSubscription PushSubscriber[]
+  orders Order[]
+  reviews Review[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -105,14 +136,53 @@ model Service {
   description String
   price Float
   thumbnail String
-  features String[]
+  features String
   status ServiceStatus @default(Draft)
+  rating Float @default(0)
 
   categoryId String @db.ObjectId
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  orders Order[]
+  reviews Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  session Int
+  month Month
+  status OrderStatus @default(Pending)
+  paymentStatus PaymentStatus @default(Pending)
+  
+  userId String @db.ObjectId
+  user User @relation(fields: [userId], references: [id])
+
+  serviceId String @db.ObjectId
+  service Service @relation(fields: [serviceId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  rating    Int      @default(0)
+
+  serviceId  String   @db.ObjectId
+  service    Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([serviceId])
+  @@index([userId])
+  @@index([rating])
+}

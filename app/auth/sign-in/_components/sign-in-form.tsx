@@ -7,7 +7,7 @@ import { z } from "zod";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -38,6 +38,7 @@ export const SignInForm = () => {
 
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
+  const router = useRouter()
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
@@ -49,6 +50,7 @@ export const SignInForm = () => {
       toast.success(data?.success, {
         id: "sign-in-user",
       });
+      router.push(`/redirect?redirectUrl=${callbackUrl ? callbackUrl : "/"}`)
     },
     onError: (error) => {
       toast.error(error.message, {

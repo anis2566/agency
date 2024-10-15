@@ -16,6 +16,7 @@ import {
   ScanSearch,
   MessageCircleWarning,
   Blocks,
+  CalendarArrowDown,
 } from "lucide-react";
 
 type Submenu = {
@@ -94,6 +95,13 @@ export function getMenuList(pathname: string): Group[] {
               icon: List,
             },
           ],
+        },
+        {
+          href: "/dashboard/order",
+          label: "Order",
+          active: pathname === "/dashboard/order",
+          icon: CalendarArrowDown,
+          submenus: [],
         },
       ],
     },

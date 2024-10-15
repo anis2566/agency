@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { CategoryStatus } from "@prisma/client";
 
 import { db } from "@/lib/prisma";
 import { ServiceSchema, ServiceSchemaType } from "@/schema/service.schema";
@@ -117,7 +118,11 @@ export const DELETE_SERVICE_ACTION = async (id: string) => {
 };
 
 export const GET_CATEGORY_ACTION = async () => {
-  const categories = await db.category.findMany();
+  const categories = await db.category.findMany({
+    where: {
+      status: CategoryStatus.Published,
+    },
+  });
 
   return categories;
 };
