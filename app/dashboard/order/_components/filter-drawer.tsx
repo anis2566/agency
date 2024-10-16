@@ -4,7 +4,7 @@ import { SearchIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import queryString from "query-string";
 import { useEffect, useState } from "react";
-import { CategoryStatus } from "@prisma/client";
+import { OrderStatus } from "@prisma/client";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -14,26 +14,31 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet";
 
 import { useDebounce } from "@/hooks/use-debounce";
-import { FilterDrawer } from "./filter-drawer";
 
-export const Header = () => {
+interface Props {
+    open: boolean;
+    handleClose: () => void;
+}
+
+export const FilterDrawer = ({ open, handleClose }: Props) => {
     const [search, setSearch] = useState<string>("");
     const [perPage, setPerPage] = useState<string>("");
     const [sort, setSort] = useState<string>("");
-    const [status, setStatus] = useState<string | CategoryStatus>("");
-    const [open, setOpen] = useState<boolean>(false);
+    const [status, setStatus] = useState<string | OrderStatus>("");
 
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
     const searchValue = useDebounce(search, 500);
-
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     useEffect(() => {
         const params = Object.fromEntries(searchParams.entries());
@@ -86,7 +91,7 @@ export const Header = () => {
     };
 
 
-    const handleStatusChange = (status: CategoryStatus) => {
+    const handleStatusChange = (status: OrderStatus) => {
         setStatus(status);
         const params = Object.fromEntries(searchParams.entries());
         const url = queryString.stringifyUrl(
@@ -103,24 +108,18 @@ export const Header = () => {
         router.push(url);
     };
 
-    const handleReset = () => {
-        router.push(pathname);
-        setSearch("");
-        setPerPage("");
-        setSort("");
-        setStatus("");
-    };
-
     return (
-        <div className="space-y-2 p-2 shadow-sm shadow-primary">
-            <FilterDrawer open={open} handleClose={handleClose} />
+        <Sheet open={open} onOpenChange={handleClose}>
+            <SheetContent>
+                <SheetHeader className="space-y-0">
+                    <SheetTitle className="text-start">Filter</SheetTitle>
+                    <SheetDescription className="text-start">
+                        Filter search result
+                    </SheetDescription>
+                </SheetHeader>
 
-            <div className="flex items-center gap-x-3 justify-between">
-                <Button size="sm" variant="outline" onClick={() => setOpen(true)} className="md:hidden">
-                    Filter
-                </Button>
-                <div className="hidden md:flex flex-1 items-center gap-x-3">
-                    <div className="relative w-full max-w-[300px]">
+                <div className="mt-4 space-y-3">
+                    <div className="relative w-full">
                         <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
@@ -133,14 +132,14 @@ export const Header = () => {
                     <Select
                         value={status || ""}
                         onValueChange={(value) =>
-                            handleStatusChange(value as CategoryStatus)
+                            handleStatusChange(value as OrderStatus)
                         }
                     >
-                        <SelectTrigger className="w-full max-w-[130px]">
+                        <SelectTrigger className="w-full">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
-                            {Object.values(CategoryStatus).map((v, i) => (
+                            {Object.values(OrderStatus).map((v, i) => (
                                 <SelectItem value={v} key={i}>
                                     {v}
                                 </SelectItem>
@@ -151,7 +150,7 @@ export const Header = () => {
                         value={sort}
                         onValueChange={(value) => handleSortChange(value)}
                     >
-                        <SelectTrigger className="w-full max-w-[130px]">
+                        <SelectTrigger className="w-full">
                             <SelectValue placeholder="Sort" />
                         </SelectTrigger>
                         <SelectContent>
@@ -163,7 +162,7 @@ export const Header = () => {
                         value={perPage || ""}
                         onValueChange={(value) => handlePerPageChange(value)}
                     >
-                        <SelectTrigger className="w-full max-w-[130px]">
+                        <SelectTrigger className="w-full">
                             <SelectValue placeholder="Limit" />
                         </SelectTrigger>
                         <SelectContent>
@@ -175,11 +174,7 @@ export const Header = () => {
                         </SelectContent>
                     </Select>
                 </div>
-
-                <Button variant="destructive" onClick={handleReset} size="sm">
-                    Reset
-                </Button>
-            </div>
-        </div>
+            </SheetContent>
+        </Sheet>
     );
 };

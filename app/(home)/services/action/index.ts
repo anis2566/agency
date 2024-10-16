@@ -100,3 +100,23 @@ export const CREATE_REVIEW_ACTION = async ({
     };
   }
 };
+
+export const GET_RELATED_SERVICES_ACTION = async (categoryId: string) => {
+  const services = await db.service.findMany({
+    where: {
+      categoryId: categoryId,
+    },
+    orderBy: {
+      rating: "asc",
+    },
+    include: {
+      category: true,
+      reviews: true,
+    },
+    take: 4,
+  });
+
+  console.log(services);
+
+  return services;
+};

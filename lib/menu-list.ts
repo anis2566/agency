@@ -17,6 +17,7 @@ import {
   MessageCircleWarning,
   Blocks,
   CalendarArrowDown,
+  HandCoins,
 } from "lucide-react";
 
 type Submenu = {
@@ -101,6 +102,20 @@ export function getMenuList(pathname: string): Group[] {
           label: "Order",
           active: pathname === "/dashboard/order",
           icon: CalendarArrowDown,
+          submenus: [],
+        },
+        {
+          href: "/dashboard/client",
+          label: "Client",
+          active: pathname === "/dashboard/client",
+          icon: Users,
+          submenus: [],
+        },
+        {
+          href: "/dashboard/review",
+          label: "Review",
+          active: pathname.includes("/dashboard/review"),
+          icon: MessageCircleWarning,
           submenus: [],
         },
       ],

@@ -1,9 +1,9 @@
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
-import { CREATE_REVIEW_ACTION } from "../action";
+import { CREATE_REVIEW_ACTION, GET_RELATED_SERVICES_ACTION } from "../action";
 import { ReviewSchema } from "@/schema/review.schema";
 import kyInstance from "@/lib/ky";
 import { ReviewPage } from "@/lib/types";
@@ -58,4 +58,17 @@ export const useGetReviews = ({ serviceId }: { serviceId: string }) => {
     isFetching,
     status,
   };
+};
+
+export const useGetRelatedServices = ({
+  categoryId,
+}: {
+  categoryId: string;
+}) => {
+  return useQuery({
+    queryKey: ["related-services", categoryId],
+    queryFn: () => GET_RELATED_SERVICES_ACTION(categoryId),
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
+  });
 };

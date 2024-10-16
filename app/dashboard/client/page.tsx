@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { OrderStatus } from "@prisma/client";
 
 import {
     Breadcrumb,
@@ -20,13 +19,13 @@ import {
 
 import { ContentLayout } from "../_components/content-layout";
 import { db } from "@/lib/prisma";
-import { OrderList } from "./_components/order-list";
-import { Header } from "./_components/header";
 import { CustomPagination } from "@/components/custom-pagination";
+import { ClientList } from "./_components/client-list";
+import { Header } from "./_components/header";
 
 export const metadata: Metadata = {
-    title: "Agency | Order",
-    description: "Agency order page.",
+    title: "Agency | Client",
+    description: "Agency client page.",
 };
 
 interface Props {
@@ -35,25 +34,29 @@ interface Props {
         sort?: string;
         page?: string;
         perPage?: string;
-        status?: OrderStatus;
     };
 }
 
-const Orders = async ({ searchParams }: Props) => {
-    const { name, sort, page = "1", perPage = "5", status } = searchParams;
+const Clients = async ({ searchParams }: Props) => {
+    const { name, sort, page = "1", perPage = "5" } = searchParams;
 
     const itemsPerPage = parseInt(perPage, 10);
     const currentPage = parseInt(page, 10);
 
-    const [orders, totalOrder] = await Promise.all([
-        db.order.findMany({
+    const [clients, totalClients] = await Promise.all([
+        db.user.findMany({
             where: {
                 ...(name && { name: { contains: name, mode: "insensitive" } }),
-                ...(status && { status }),
+                orders: {
+                    some: {}
+                }
             },
             include: {
-                service: true,
-                user: true,
+                orders: {
+                    select: {
+                        id: true,
+                    }
+                },
             },
             orderBy: {
                 createdAt: sort === "asc" ? "asc" : "desc",
@@ -61,18 +64,17 @@ const Orders = async ({ searchParams }: Props) => {
             skip: (currentPage - 1) * itemsPerPage,
             take: itemsPerPage,
         }),
-        db.order.count({
+        db.user.count({
             where: {
                 ...(name && { name: { contains: name, mode: "insensitive" } }),
-                ...(status && { status }),
             },
         }),
     ]);
 
-    const totalPages = Math.ceil(totalOrder / itemsPerPage);
+    const totalPages = Math.ceil(totalClients / itemsPerPage);
 
     return (
-        <ContentLayout title="Order">
+        <ContentLayout title="Client">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -82,21 +84,21 @@ const Orders = async ({ searchParams }: Props) => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Order</BreadcrumbPage>
+                        <BreadcrumbPage>Client</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Orders</CardTitle>
+                    <CardTitle>Clients</CardTitle>
                     <CardDescription>
-                        Manage and organize your orders
+                        Manage and organize your clients
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Header />
-                    <OrderList orders={orders} />
+                    <ClientList clients={clients} />
                     <CustomPagination totalPages={totalPages} />
                 </CardContent>
             </Card>
@@ -105,4 +107,4 @@ const Orders = async ({ searchParams }: Props) => {
     )
 }
 
-export default Orders
+export default Clients

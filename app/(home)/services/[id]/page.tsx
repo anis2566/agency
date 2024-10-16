@@ -10,6 +10,7 @@ import { db } from "@/lib/prisma";
 import { Preview } from "@/components/preview";
 import BuyButton from "./_components/buy-button";
 import { Reviews } from "./_components/reviews";
+import { RelatedServices } from "./_components/related-services";
 
 export const metadata: Metadata = {
     title: "Agency | Services | Details",
@@ -72,6 +73,8 @@ const ServiceDetails = async ({ params: { id } }: Props) => {
                     <Reviews serviceId={service.id} rating={service.rating} />
                 </TabsContent>
             </Tabs>
+
+            <RelatedServices categoryId={service.categoryId} />
         </div>
     )
 }
